@@ -34,6 +34,6 @@ services:
       - ./backend:/backend
     expose:
       - "8080"
-    command: ./gradlew bootRun
+    command: ./gradlew bootRunDocker
     depends_on:
       - mongodb
