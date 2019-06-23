@@ -1,0 +1,39 @@
+version: '3'
+services:
+  # Nginx
+  nginx:
+    container_name: some-nginx
+    image: nginx:1.13
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - backend
+  
+  # Mongo DB
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    ports:
+        - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
+
+  # Spring boot
+  backend:
+    restart: always
+    build: ./backend
+    working_dir: /backend
+    volumes:
+      - ./backend:/backend
+    expose:
+      - "8080"
+    command: ./gradlew bootRun
+    depends_on:
+      - mongodb
